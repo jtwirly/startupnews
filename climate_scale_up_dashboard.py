@@ -5,108 +5,129 @@ from datetime import datetime
 import json
 from pathlib import Path
 import urllib.parse
+import os
 
 # Page configuration
 st.set_page_config(page_title="Climate Scale-Up News Dashboard", layout="wide")
 
-# Combined company information for both cohorts
+# Complete company information with CEOs
 COMPANIES = {
     # 2024 Cohort
     "Talus Renewables": {
         "cohort": "2024",
+        "ceo": "Hiro Iwanaga",
         "description": "World's first commercial modular green ammonia, hydrogen to fertilizer plant",
-        "search_terms": '"Talus Renewables"'
+        "search_terms": '"Talus Renewables" AND "Hiro Iwanaga"'
     },
     "Amini.ai": {
         "cohort": "2024",
+        "ceo": "Kate Kallot",
         "description": "Time's 100 most influential people in AI",
-        "search_terms": '"Amini.ai"'
+        "search_terms": '"Amini.ai" AND "Kate Kallot"'
     },
     "Mombak": {
         "cohort": "2024",
+        "ceo": "Peter Fernandez",
         "description": "Backed by Microsoft, AXA, Rockefeller Foundation",
-        "search_terms": '"Mombak"'
+        "search_terms": '"Mombak" AND "Peter Fernandez"'
     },
     "Moxair": {
         "cohort": "2024",
+        "ceo": "Adi Gottumukkala",
         "description": "Scalable methane emissions reduction technologies",
-        "search_terms": '"Moxair"'
+        "search_terms": '"Moxair" AND "Aditya Gottumukkala"'
     },
     "ClearFlame": {
         "cohort": "2024",
+        "ceo": "BJ Johnson",
         "description": "Fast Company's Next big thing in Tech",
-        "search_terms": '"ClearFlame"'
+        "search_terms": '"ClearFlame" AND "BJ Johnson"'
     },
     "Source.co": {
         "cohort": "2024",
+        "ceo": "Cody Friesen",
         "description": "Winner of McNulty Prize, Backed by Bill Gates and Blackrock",
-        "search_terms": '"Source.co"'
+        "search_terms": '"Source.co" AND "Cody Friesen"'
     },
     "Carbonwave": {
         "cohort": "2024",
+        "ceo": "Geoff Chapin",
         "description": "World Economic Forum's Top Innovator Award",
-        "search_terms": '"Carbonwave"'
+        "search_terms": '"Carbonwave" AND "Geoff Chapin"'
     },
     "Running Tide": {
         "cohort": "2024",
+        "ceo": "Marty Odlin",
         "description": "Ocean-based carbon removal and ecosystem restoration",
-        "search_terms": '"Running Tide"'
+        "search_terms": '"Running Tide" AND "Marty Odlin"'
     },
     # 2025 Cohort
     "EarthGrid PBC": {
         "cohort": "2025",
+        "ceo": "Troy Helming",
         "description": "Revolutionizing infrastructure with plasma boring robot for underground tunnels",
-        "search_terms": '"EarthGrid PBC" OR "EarthGrid"'
+        "search_terms": '"EarthGrid PBC" AND "Troy Helming"'
     },
     "TURN2X": {
         "cohort": "2025",
+        "ceo": "Philip Kessler",
         "description": "Producing renewable, CO₂-neutral natural gas from green hydrogen",
-        "search_terms": '"TURN2X"'
+        "search_terms": '"TURN2X" AND "Philip Kessler"'
     },
     "Upwell Materials": {
         "cohort": "2025",
+        "ceo": "Daniella Zakon",
         "description": "Innovating algae-based, carbon-negative materials for cosmetics",
-        "search_terms": '"Upwell Materials"'
+        "search_terms": '"Upwell" AND "Daniella Zakon"'
     },
     "re.green": {
         "cohort": "2025",
+        "ceo": "Thiago Picolo",
         "description": "Leading Brazil's ecological restoration initiatives",
-        "search_terms": '"re.green"'
+        "search_terms": '"re.green" AND "Thiago Picolo"'
     },
     "WeForest": {
         "cohort": "2025",
+        "ceo": "Marie-Noëlle Keijzer",
         "description": "Restoring over 71,000 hectares of forest and nearly 100 million trees planted",
-        "search_terms": '"WeForest"'
+        "search_terms": '"WeForest" AND "Marie-Noëlle Keijzer"'
     },
     "NatureX RMS": {
         "cohort": "2025",
+        "ceo": "Raviv Turner",
         "description": "Climate resilience and nature risk management platform using AI agents",
-        "search_terms": '"NatureX RMS" OR "NatureX"'
+        "search_terms": '"NatureX" AND "Raviv Turner"'
     },
     "S3 Markets": {
         "cohort": "2025",
+        "ceo": "Saman Baghestani",
         "description": "Tackling Scope 3 emissions through supply chain insetting",
-        "search_terms": '"S3 Markets"'
+        "search_terms": '"S3" AND "Saman Baghestani"'
     },
     "ArtifexAI": {
         "cohort": "2025",
+        "ceo": "Russ Wilcox",
         "description": "Using AI to transform urban environments for sustainable development",
-        "search_terms": '"ArtifexAI"'
+        "search_terms": '"ArtifexAI" AND "Russ Wilcox"'
     },
     "Seafields Solutions": {
         "cohort": "2025",
+        "ceo": "John Wedge Auckland",
         "description": "Pioneering open-ocean aquaculture using Sargassum for CO₂ sequestration",
-        "search_terms": '"Seafields Solutions"'
+        "search_terms": '"Seafields" AND "John Auckland"'
     }
 }
 
 def get_google_news(company_name):
-    """Get news from Google News RSS feed"""
-    # Encode company name for URL
-    query = urllib.parse.quote(COMPANIES[company_name]['search_terms'].replace('"', ''))
+    """Get news from Google News RSS feed requiring both company and CEO name"""
+    company_info = COMPANIES[company_name]
+    
+    # Create search query with company name OR CEO name
+    query = company_info['search_terms']
+    encoded_query = urllib.parse.quote(query)
     
     # Create Google News RSS URL
-    rss_url = f"https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:en"
+    rss_url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-US&gl=US&ceid=US:en"
     
     try:
         # Parse RSS feed
@@ -207,7 +228,7 @@ def main():
             <div style="background-color: #f8f9fa; padding: 1px 15px; border-radius: 5px; margin: 10px 0;">
                 <h3>{company}</h3>
                 <p><em>{COMPANIES[company]['description']}</em></p>
-                <p><small>Cohort: {COMPANIES[company]['cohort']}</small></p>
+                <p><small>Cohort: {COMPANIES[company]['cohort']} | CEO: {COMPANIES[company]['ceo']}</small></p>
             </div>
             """, unsafe_allow_html=True)
             
@@ -245,7 +266,7 @@ def main():
             st.markdown("---")
     
     with tab2:
-        st.header("Submit Company Update")
+        st.header("Submit Company Update - In Beta")
         company = st.selectbox("Company", options=available_companies)
         update_type = st.selectbox("Update Type", [
             "Partnership Announcement",
