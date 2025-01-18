@@ -8,7 +8,7 @@ import urllib.parse
 import os
 
 # Page configuration
-st.set_page_config(page_title="Climate Scale-Up News Dashboard", layout="wide")
+#st.set_page_config(page_title="Climate Scale-Up News Dashboard", layout="wide")
 
 # Complete company information with CEOs
 COMPANIES = {
@@ -191,10 +191,10 @@ def display_news_card(title, description, date, source, url=None):
         link_text = ""
         
     st.markdown(f"""
-    <div style="border:1px solid #f0f0f0; padding:20px; margin:10px 0; border-radius:5px">
-        <h4>{title}</h4>
-        <p>{description}</p>
-        <p><small>{format_date(date)} | {source}</small></p>
+    <div style="background-color: #2D2D2D; border:1px solid #333; padding:20px; margin:10px 0; border-radius:5px; color: #FFFFFF;">
+        <h4 style="color: #FFFFFF;">{title}</h4>
+        <p style="color: #CCCCCC;">{description}</p>
+        <p style="color: #999999;"><small>{format_date(date)} | {source}</small></p>
         {link_text}
     </div>
     """, unsafe_allow_html=True)
@@ -225,10 +225,10 @@ def main():
     with tab1:
         for company in selected_companies:
             st.markdown(f"""
-            <div style="background-color: #f8f9fa; padding: 1px 15px; border-radius: 5px; margin: 10px 0;">
-                <h3>{company}</h3>
-                <p><em>{COMPANIES[company]['description']}</em></p>
-                <p><small>Cohort: {COMPANIES[company]['cohort']} | CEO: {COMPANIES[company]['ceo']}</small></p>
+            <div style="background-color: #2D2D2D; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                <h3 style="color: #FFFFFF; font-size: 38px; font-weight: 700; margin-bottom: 12px;">{company}</h3>
+                <p style="color: #CCCCCC; font-size: 16px;"><em>{COMPANIES[company]['description']}</em></p>
+                <p style="color: #999999; font-size: 14px;"><small>Cohort: {COMPANIES[company]['cohort']} | CEO: {COMPANIES[company]['ceo']}</small></p>
             </div>
             """, unsafe_allow_html=True)
             
